@@ -1,9 +1,8 @@
-#доделать кнопку паузы, метеориты/враги, размер метеоритов
+# доделать кнопку паузы, метеориты/враги, размер метеоритов
 
 
 import pygame
 import random
-
 
 WIDTH = 800
 HEIGHT = 640
@@ -29,7 +28,8 @@ PAUSE = 1
 TIMER = 0
 WEAPON = 1
 
-class hit_effect(pygame.sprite.Sprite):
+
+class HitEffect(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.id = 0
@@ -45,7 +45,8 @@ class hit_effect(pygame.sprite.Sprite):
         else:
             self.kill()
 
-class explosive(pygame.sprite.Sprite):
+
+class Explosive(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.id = 0
@@ -61,12 +62,13 @@ class explosive(pygame.sprite.Sprite):
         else:
             self.kill()
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image = player_idle_img
         self.rect = self.image.get_rect()
-        self.rect.center = (WIDTH/2, HEIGHT-40)
+        self.rect.center = (WIDTH / 2, HEIGHT - 40)
         self.speed = 15
         self.shoot_delay = 3
         self.shoot_position = True
@@ -86,22 +88,22 @@ class Player(pygame.sprite.Sprite):
             if keystate[pygame.K_a] and self.rect.left > 10:
                 self.rect.x -= self.speed
                 self.image = player_left_img
-            if keystate[pygame.K_d] and self.rect.right < WIDTH-10:
+            if keystate[pygame.K_d] and self.rect.right < WIDTH - 10:
                 self.rect.x += self.speed
                 self.image = player_right_img
             if keystate[pygame.K_SPACE] and self.shoot_delay < 0:
                 if WEAPON == 1:
-                    if self.shoot_position == True:
-                        bullet = Bullet_Yellow(self.rect.centerx-15, self.rect.y+30)
+                    if self.shoot_position:
+                        bullet = BulletYellow(self.rect.centerx - 15, self.rect.y + 30)
                         self.shoot_position = False
                     else:
-                        bullet = Bullet_Yellow(self.rect.centerx+15, self.rect.y)
+                        bullet = BulletYellow(self.rect.centerx + 15, self.rect.y)
                         self.shoot_position = True
                     bullets.add(bullet)
                     self.shoot_delay = 3
                     shoot1_snd.play()
                 if WEAPON == 2:
-                    bullet = Bullet_Laser(self.rect.centerx, self.rect.top)
+                    bullet = BulletLaser(self.rect.centerx, self.rect.top)
                     bullets.add(bullet)
                     self.shoot_delay = 6
             else:
@@ -113,7 +115,7 @@ class Enemy1(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = enemy1_img
         self.rect = self.image.get_rect()
-        self.rect.x = random.randint(50,WIDTH-50)
+        self.rect.x = random.randint(50, WIDTH - 50)
         self.rect.bottom = 0
         self.speed = 3
         self.hp = 5
@@ -121,18 +123,19 @@ class Enemy1(pygame.sprite.Sprite):
     def update(self):
         global SCORE
         self.rect.y += self.speed * PAUSE
-        if self.rect.y > HEIGHT-10:
+        if self.rect.y > HEIGHT - 10:
             self.kill()
         if self.hp == 0:
             SCORE += 1
             self.kill()
+
 
 class Enemy2(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image = enemy2_img
         self.rect = self.image.get_rect()
-        self.rect.x = random.randint(50,WIDTH-50)
+        self.rect.x = random.randint(50, WIDTH - 50)
         self.rect.bottom = 0
         self.speed = 8
         self.hp = 2
@@ -140,35 +143,37 @@ class Enemy2(pygame.sprite.Sprite):
     def update(self):
         global SCORE
         self.rect.y += self.speed * PAUSE
-        if self.rect.y > HEIGHT-10:
+        if self.rect.y > HEIGHT - 10:
             self.kill()
         if self.hp == 0:
             SCORE += 2
             self.kill()
+
 
 class Enemy3(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image = enemy3_img
         self.rect = self.image.get_rect()
-        self.rect.x = random.randint(50,WIDTH-50)
+        self.rect.x = random.randint(50, WIDTH - 50)
         self.rect.bottom = 0
         self.speed = 1
         self.hp = 10
 
     def update(self):
         global SCORE
-        if random.randint(1,50) == 5:
-            x = Bullet_Enemy(self.rect.centerx, self.rect.bottom)
-            bullets_enemy.add(x)
+        if random.randint(1, 50) == 5:
+            new_bullet_enemy = BulletEnemy(self.rect.centerx, self.rect.bottom)
+            bullets_enemy.add(new_bullet_enemy)
         self.rect.y += self.speed * PAUSE
-        if self.rect.y > HEIGHT-10:
+        if self.rect.y > HEIGHT - 10:
             self.kill()
         if self.hp == 0:
             SCORE += 5
             self.kill()
 
-class Bullet_Yellow(pygame.sprite.Sprite):
+
+class BulletYellow(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = bullet_yellow
@@ -182,7 +187,8 @@ class Bullet_Yellow(pygame.sprite.Sprite):
         if self.rect.y < 0 or self.hp < 0:
             self.kill()
 
-class Bullet_Laser(pygame.sprite.Sprite):
+
+class BulletLaser(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = bullet_laser
@@ -196,7 +202,8 @@ class Bullet_Laser(pygame.sprite.Sprite):
         if self.rect.y < 0 or self.hp < 0:
             self.kill()
 
-class Bullet_Enemy(pygame.sprite.Sprite):
+
+class BulletEnemy(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = bullet_enemy
@@ -209,6 +216,7 @@ class Bullet_Enemy(pygame.sprite.Sprite):
         if self.rect.y > HEIGHT:
             self.kill()
 
+
 class Button(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -217,10 +225,11 @@ class Button(pygame.sprite.Sprite):
         self.rect.x = 670
         self.rect.y = 10
 
+
 class Meteor(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.id = random.randint(0,9)
+        self.id = random.randint(0, 9)
         self.image = meteors_sprite[self.id]
         self.rect = self.image.get_rect()
         self.rect.x = -100
@@ -239,6 +248,7 @@ class Meteor(pygame.sprite.Sprite):
         if self.rect.top > HEIGHT + 100:
             self.kill()
 
+
 def enemies_spawn():
     global enemy1_spawn_delay, enemy1_delay, enemy2_spawn_delay, enemy2_delay, enemy3_spawn_delay, enemy3_delay
     if enemy1_spawn_delay < 0:
@@ -246,25 +256,26 @@ def enemies_spawn():
         enemies.add(enemy)
         enemy1_spawn_delay = enemy1_delay
     else:
-        enemy1_spawn_delay -= random.randint(1,3)
+        enemy1_spawn_delay -= random.randint(1, 3)
 
     if enemy2_spawn_delay < 0 and enemy1_delay == 100:
         enemy = Enemy2()
         enemies.add(enemy)
         enemy2_spawn_delay = enemy2_delay
     else:
-        enemy2_spawn_delay -= random.randint(1,3)
+        enemy2_spawn_delay -= random.randint(1, 3)
 
     if enemy3_spawn_delay < 0 and enemy2_delay == 100:
         enemy = Enemy3()
         enemies.add(enemy)
         enemy3_spawn_delay = enemy3_delay
     else:
-        enemy3_spawn_delay -= random.randint(1,3)
+        enemy3_spawn_delay -= random.randint(1, 3)
+
 
 def difficult():
     global enemy1_delay, pr_score, delay_flag, enemy2_delay, enemy3_delay
-    #print(enemy1_delay)
+    # print(enemy1_delay)
     if SCORE > pr_score:
         delay_flag = True
 
@@ -279,18 +290,23 @@ def difficult():
             pr_score = SCORE
             delay_flag = False
 
+
 def meteor_spawn():
-    if random.randint(1,100) == 50:
-        x = Meteor()
-        meteors.add(x)
+    if random.randint(1, 100) == 50:
+        new_meteor = Meteor()
+        meteors.add(new_meteor)
+
 
 font_name = pygame.font.match_font('arial')
+
+
 def draw_text(surf, text, size, x, y):
     font = pygame.font.Font(font_name, size)
     text_surface = font.render(text, True, '#FFF222')
     text_rect = text_surface.get_rect()
     text_rect.midtop = (x, y)
     surf.blit(text_surface, text_rect)
+
 
 pygame.init()
 pygame.mixer.init()
@@ -347,8 +363,8 @@ bullet_enemy = pygame.image.load(bullet_enemy)
 explosive_sprites = []
 red_sprites = []
 meteors_sprite = []
-for i in range(1,19):
-    x = 'src/sprites/explosive/'+str(i)+'.png'
+for i in range(1, 19):
+    x = 'src/sprites/explosive/' + str(i) + '.png'
     x = pygame.image.load(x)
     explosive_sprites.append(x)
 for i in range(1, 6):
@@ -412,9 +428,9 @@ while running:
         i.hp -= 1
         hit_snd.play()
         if i.hp == 0:
-            x = explosive(i.rect.centerx, i.rect.centery)
+            new_explosive = Explosive(i.rect.centerx, i.rect.centery)
             exp_snd.play()
-            other.add(x)
+            other.add(new_explosive)
 
     hits = pygame.sprite.groupcollide(bullets, enemies, False, False)
     for i in hits:
@@ -423,20 +439,22 @@ while running:
     hits = pygame.sprite.groupcollide(meteors, bullets, True, True)
     hits = pygame.sprite.groupcollide(enemies, meteors, True, True)
     for i in hits:
-        x = explosive(i.rect.centerx, i.rect.centery)
+        new_explosive = Explosive(i.rect.centerx, i.rect.centery)
 
     hit_player = pygame.sprite.spritecollide(player, enemies, True)
     if hit_player:
         player.hp -= 10
-        x = explosive(player.rect.centerx, player.rect.y)
+        new_explosive = Explosive(player.rect.centerx, player.rect.y)
         exp_snd.play()
-        other.add(x)
-        x = hit_effect()
-        other.add(x)
+        other.add(new_explosive)
+        hit_effect = HitEffect()
+        other.add(hit_effect)
 
     hit_player = pygame.sprite.spritecollide(player, bullets_enemy, True)
     if hit_player:
         player.hp -= 5
+        hit_effect = HitEffect()
+        other.add(hit_effect)
 
     pygame.draw.rect(screen, '#ff183b', (654, 571, player.hp, 15))
     screen.blit(button.image, button.rect)
